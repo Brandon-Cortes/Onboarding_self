@@ -1,0 +1,43 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    min-height: 100vh;
+    background: #f5f5f5;
+    margin: 0;
+    font-family: sans-serif;
+    padding-top: 20px;
+}
+
+#entireForm {
+    width: 320px; /* Smaller width for compactness */
+    background: rgba(0, 255, 255, 0.75);
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.5px);
+    -webkit-backdrop-filter: blur(9.5px);
+    border: 1px solid rgba(0, 255, 150, 0.3);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* tighter spacing */
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+}
+
+.info label {
+    margin-bottom: 2px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.info input,
+.info select {
+    padding: 6px 8px; /* smaller padding */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
