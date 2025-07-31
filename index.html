@@ -1,39 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css" type="text/css">
-    <script src="script.js" defer></script>
-    <title>Document</title>
+<meta charset="UTF-8">
+<title>OPTs Out of Service Troubleshooter - MVP</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { font-family: Arial, sans-serif; background: #f0f0f0; padding: 20px; }
+  #container { background: white; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; }
+  .form-group { display: flex; flex-direction: column; margin-bottom: 10px; }
+  .form-group label { margin-bottom: 2px; font-weight: 500; }
+  input, select, textarea, button { margin: 0; width: 100%; padding: 8px; box-sizing: border-box; }
+  button { cursor: pointer; }
+  #buttons button { width: 48%; display: inline-block; margin-top: 0; }
+  @media (max-width: 500px) {
+    #container { padding: 8px; }
+    input, select, textarea, button { font-size: 1em; padding: 6px; }
+    #buttons button { width: 100%; margin-bottom: 8px; }
+  }
+  body.dark-mode {
+    background: #181818 !important;
+    color: #fff !important;
+  }
+  body.dark-mode #container {
+    background: #232323 !important;
+    color: #fff !important;
+  }
+  body.dark-mode input,
+  body.dark-mode select,
+  body.dark-mode textarea {
+    background: #222 !important;
+    color: #fff !important;
+    border: 1px solid #444 !important;
+  }
+  body.dark-mode button {
+    background: #333 !important;
+    color: #fff !important;
+    border: 1px solid #444 !important;
+  }
+  body.dark-mode #buttons button {
+    background: #444 !important;
+    color: #fff !important;
+    border: 1px solid #666 !important;
+  }
+</style>
 </head>
-
 <body>
-    <div id="entireForm">
-        <div class="info"><label for="name_position">Caller:</label><input type="text" placeholder="Ex. Brandon Tech A12345"></div>
-        <div class="info"><label for="site_name">Site Name:</label><input type="text" placeholder="Ex. Arco 1234"></div>
-        <div class="info"><label for="Caller_Phone">Caller Phone#:</label><input type="text" placeholder="Ex. 123-456-7890"></div>
-        <div class="info"><label for="Issue">Issue Reported:</label><input type="text" placeholder="Ex. G6-300 - OPT 01 - OOS"></div>
-        <div class="info"><label for="Invenco_Model">InvencoModel:</label>
-            <select name="Model" id="Model">
-                <option value="G6-300">G6-300</option>
-                <option value="G6-400">G6-400</option>
-                <option value="G7-100">G7-100</option>
-                <option value="Edge_Pro">Edge Pro</option>
-            </select>
-        </div>
-        <div class="info"><label for="POS">POS:</label>
-            <select name="POS" id="POS">
-                <option value="Verifone">Verifone</option>
-                <option value="NCR">NCR</option>
-                <option value="Gilbarco">Gilbarco</option>
-                <option value="Other">Other</option>
-            </select>
-        </div>
-        <div class="info"><label for="When/How">When/How did issue begin?</label></div>
+<div id="container">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+    <h2 style="margin:0;">OPTs Out of Service Troubleshooter</h2>
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+      <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()" style="accent-color:#222;"> Dark Mode
+    </label>
+  </div>
+
+  <div class="form-group">
+    <input type="text" id="callerName" placeholder="Caller Name and Position (e.g., Hadi - Cashier)">
+  </div>
+  <div class="form-group">
+    <input type="text" id="siteName" placeholder="Site Name">
+  </div>
+  <div class="form-group">
+    <input type="text" id="callerPhone" placeholder="Caller Phone #">
+  </div>
+  <div class="form-group">
+    <input type="text" id="issueReported" placeholder="Issue Reported (e.g., All OPTs Offline)">
+  </div>
+  <div class="form-group">
+    <label for="invencoModel">Invenco Model:</label>
+    <select id="invencoModel">
+      <option value="">Select Model</option>
+      <option>G6-300</option>
+      <option>G6-400</option>
+      <option>G7-100</option>
+      <option>EDGE</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="posType">POS Type:</label>
+    <select id="posType">
+      <option value="">Select POS Type</option>
+      <option>VFI</option>
+      <option>Passport</option>
+      <option>NCR</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <input type="text" id="issueStart" placeholder="When/How did this issue begin?">
+  </div>
+  <div class="form-group">
+    <input type="text" id="custTrouble" placeholder="Troubleshooting done by customer before call?">
+  </div>
+  <div class="form-group">
+    <input type="text" id="caseRelated" placeholder="Existing or Created Case? (Case #)">
+  </div>
+  <div class="form-group">
+    <input type="text" id="kbArticle" placeholder="KB Article Referenced">
+  </div>
+
+  <button onclick="startFlow()">Start Troubleshooting</button>
+
+  <div id="questionArea" style="margin-top:20px; display:none;">
+    <div id="question">Question will appear here</div>
+    <div id="instructions" style="margin-top:10px; font-size:0.95em; color:#555;"></div>
+    <div id="buttons">
+      <button onclick="handleAnswer('Yes')">Yes</button>
+      <button onclick="handleAnswer('No')">No</button>
     </div>
+  </div>
 
+  <textarea id="notes" rows="15" placeholder="Notes will build here automatically..." readonly></textarea>
+  <button id="copyBtn" onclick="copyNotes()" style="display:none;">Copy Notes</button>
+</div>
+
+
+<script src="script.js"></script>
+<script>
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode', document.getElementById('darkModeToggle').checked);
+}
+</script>
 </body>
-
 </html>
